@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "DeviceStreamSample": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "APPSETTING_IOTHUB_CONNECTION_STRING": "<yourDeviceConnectionString>",
+        "WEBJOBS_PORT": "<internal_proxy_port>"
+      }
+    }
+  }
+}

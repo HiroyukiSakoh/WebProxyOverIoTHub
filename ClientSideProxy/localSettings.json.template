@@ -1,0 +1,6 @@
+﻿{
+  "IoTHubServiceConnectionString": "",
+  "TargetDeviceId": "",
+  "LocalWebProxyPort": "",
+  "UpstreamWebProxy": ""
+}
