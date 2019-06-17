@@ -2,7 +2,6 @@
 using Microsoft.Azure.WebJobs;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -44,6 +43,7 @@ namespace WebProxyOverIoTHub.ServerSideProxy
 
         private InternalWebProxyServer internalWebProxyServer;
         private DeviceClient deviceClient;
+        private DeviceStream deviceStream;
 
         /// <summary>
         /// WebJob 開始
@@ -57,11 +57,22 @@ namespace WebProxyOverIoTHub.ServerSideProxy
                 //ローカルのWebProxyを立てる
                 internalWebProxyServer = new InternalWebProxyServer(GetInternalWebProxyPort());
                 internalWebProxyServer.Start();
-                Console.WriteLine($"start port:{GetInternalWebProxyPort()}");
+                Console.WriteLine($"InternalWebProxyServer start port:{GetInternalWebProxyPort()}");
 
                 //IoTHubにDeviceClientとして接続
+#if DEBUG
+                deviceClient = DeviceClient.CreateFromConnectionString(GetIoTHubConnectionString(), new ITransportSettings[] { new AmqpTransportSettings(TransportType.Amqp_WebSocket_Only){
+                    Proxy = new System.Net.WebProxy("localhost:8888"),
+                }
+                });
+#else
                 deviceClient = DeviceClient.CreateFromConnectionString(GetIoTHubConnectionString(), new ITransportSettings[] { new AmqpTransportSettings(TransportType.Amqp_Tcp_Only) });
-                await new DeviceStream(deviceClient, "localhost", GetInternalWebProxyPort()).RunAsync(cancellationToken);
+#endif
+                await deviceClient.OpenAsync();
+                Console.WriteLine("IoTHubへのデバイス接続完了");
+
+                deviceStream = new DeviceStream(deviceClient, "localhost", GetInternalWebProxyPort());
+                await deviceStream.StartAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -79,14 +90,9 @@ namespace WebProxyOverIoTHub.ServerSideProxy
         {
             try
             {
-                if (deviceClient != null)
-                {
-                    deviceClient.Dispose();
-                }
-                if (internalWebProxyServer != null)
-                {
-                    internalWebProxyServer.Stop();
-                }
+                deviceStream.Stop();
+                deviceClient?.Dispose();
+                internalWebProxyServer?.Stop();
             }
             catch (Exception ex)
             {

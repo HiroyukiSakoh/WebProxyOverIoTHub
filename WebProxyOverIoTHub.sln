@@ -3,9 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29001.49
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientSideProxy", "ClientSideProxy\ClientSideProxy.csproj", "{41B518B3-44D3-4861-9E1A-69D4279A273B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientSideProxy", "ClientSideProxy\ClientSideProxy.csproj", "{41B518B3-44D3-4861-9E1A-69D4279A273B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerSideProxy", "ServerSideProxy\ServerSideProxy.csproj", "{BB0B1C68-0F06-4FA0-833B-304C2D945D8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerSideProxy", "ServerSideProxy\ServerSideProxy.csproj", "{BB0B1C68-0F06-4FA0-833B-304C2D945D8C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "submodules", "submodules", "{92839CF5-3977-4B4A-95DF-A7E8594A38B3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Titanium.Web.Proxy.NetCore", "Titanium-Web-Proxy\src\Titanium.Web.Proxy\Titanium.Web.Proxy.NetCore.csproj", "{F349A503-36E8-49B7-92AC-2C8837D28216}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamExtended", "Titanium-Web-Proxy\src\StreamExtended\StreamExtended.csproj", "{5935B3CC-D3B3-4815-A2F0-6B6F8CEDDA0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +27,21 @@ Global
 		{BB0B1C68-0F06-4FA0-833B-304C2D945D8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB0B1C68-0F06-4FA0-833B-304C2D945D8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB0B1C68-0F06-4FA0-833B-304C2D945D8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F349A503-36E8-49B7-92AC-2C8837D28216}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F349A503-36E8-49B7-92AC-2C8837D28216}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F349A503-36E8-49B7-92AC-2C8837D28216}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F349A503-36E8-49B7-92AC-2C8837D28216}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5935B3CC-D3B3-4815-A2F0-6B6F8CEDDA0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5935B3CC-D3B3-4815-A2F0-6B6F8CEDDA0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5935B3CC-D3B3-4815-A2F0-6B6F8CEDDA0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5935B3CC-D3B3-4815-A2F0-6B6F8CEDDA0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F349A503-36E8-49B7-92AC-2C8837D28216} = {92839CF5-3977-4B4A-95DF-A7E8594A38B3}
+		{5935B3CC-D3B3-4815-A2F0-6B6F8CEDDA0F} = {92839CF5-3977-4B4A-95DF-A7E8594A38B3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF8D87AF-A845-4420-9962-72B4C3F61CE2}

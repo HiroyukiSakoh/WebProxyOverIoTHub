@@ -1,5 +1,4 @@
 ﻿using Microsoft.Azure.Devices;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
@@ -13,43 +12,65 @@ namespace WebProxyOverIoTHub.ClientSideProxy
 {
     public class ClientSideProxy : IHostedService
     {
-        private readonly IApplicationLifetime applicationLifetime;
-        private readonly LocalSettings localSettings;
+        private readonly Config config;
         private readonly ServiceClient serviceClient;
+        private readonly DeviceStream deviceStream;
+        private readonly InternalWebProxyServer internalWebProxyServer;
 
-        public ClientSideProxy(IApplicationLifetime applicationLifetime, IOptions<LocalSettings> localSettings)
+        public ClientSideProxy(IOptions<Config> config)
         {
-            this.applicationLifetime = applicationLifetime;
-            this.localSettings = localSettings.Value;
-
-            this.serviceClient = ServiceClient.CreateFromConnectionString(
-                this.localSettings.IoTHubServiceConnectionString
-                , TransportType.Amqp_WebSocket_Only
-                , new ServiceClientTransportSettings
-                {
-                    AmqpProxy = new WebProxy(this.localSettings.UpstreamWebProxy),
-                    HttpProxy = new WebProxy(this.localSettings.UpstreamWebProxy),
-                });
+            this.config = config.Value;
+            if (this.config.UpstreamWebProxy != null)
+            {
+                this.serviceClient = ServiceClient.CreateFromConnectionString(
+                    this.config.IoTHubServiceConnectionString
+                    , TransportType.Amqp_WebSocket_Only
+                    , new ServiceClientTransportSettings
+                    {
+                        AmqpProxy = new WebProxy(this.config.UpstreamWebProxy),
+                        HttpProxy = new WebProxy(this.config.UpstreamWebProxy),
+                    });
+            }
+            else
+            {
+                this.serviceClient = ServiceClient.CreateFromConnectionString(
+                    this.config.IoTHubServiceConnectionString
+                    , TransportType.Amqp_WebSocket_Only);
+            }
             HackServiceClientProxy();
+            //ローカルのWebProxyを立てる
+            internalWebProxyServer = new InternalWebProxyServer(this.config.LocalInternalWebProxyPort, this.config.LocalDeviceStreamPort);
+
+            this.deviceStream = new DeviceStream(serviceClient
+                , this.config.TargetDeviceId
+                , this.config.LocalDeviceStreamPort
+                , this.config.UpstreamWebProxy
+                , this.config.StreamName);
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            Console.WriteLine("StartAsync");
+            internalWebProxyServer.Start();
+            Console.WriteLine($"InternalWebProxyServer start port:{this.config.LocalDeviceStreamPort}");
 
             await serviceClient.OpenAsync();
             Console.WriteLine("IoTHubへのサービス接続完了");
 
-            await new DeviceStream(serviceClient
-                , localSettings.TargetDeviceId
-                , localSettings.LocalWebProxyPort
-                , localSettings.UpstreamWebProxy).RunAsync(cancellationToken);
+            await this.deviceStream.StartAsync(cancellationToken);
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            Console.WriteLine("StopAsync");
-            await serviceClient.CloseAsync();
+            try
+            {
+                this.deviceStream.Stop();
+                await serviceClient?.CloseAsync();
+                internalWebProxyServer?.Stop();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
 
         private void HackServiceClientProxy()
