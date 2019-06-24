@@ -10,15 +10,12 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Devices" Version="1.27.0-preview-003" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="localSettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\Titanium-Web-Proxy\src\Titanium.Web.Proxy\Titanium.Web.Proxy.NetCore.csproj" />
   </ItemGroup>
 
 </Project>

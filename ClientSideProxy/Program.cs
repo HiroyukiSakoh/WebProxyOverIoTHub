@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -11,22 +12,24 @@ namespace WebProxyOverIoTHub.ClientSideProxy
 
         static async Task Main(string[] args)
         {
-            var host = new HostBuilder()
+            TaskScheduler.UnobservedTaskException
+              += TaskScheduler_UnobservedTaskException;
+            await new HostBuilder()
                 .ConfigureHostConfiguration(config =>
                 {
-                    config.SetBasePath(Directory.GetCurrentDirectory());
-                    config.AddJsonFile("localSettings.json", optional: true);
+                    config.AddCommandLine(args);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.Configure<LocalSettings>(options => hostContext.Configuration.Bind(options));
+                    services.Configure<Config>(options => hostContext.Configuration.Bind(options));
                     services.AddHostedService<ClientSideProxy>();
                 })
-                .Build();
-            using (host)
-            {
-                await host.RunAsync();
-            }
+                .RunConsoleAsync();
+        }
+
+        private static void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            Console.WriteLine(e.Exception.InnerException);
         }
     }
 }

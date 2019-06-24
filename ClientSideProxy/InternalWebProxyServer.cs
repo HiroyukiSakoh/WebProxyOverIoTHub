@@ -8,25 +8,24 @@ using Titanium.Web.Proxy;
 using Titanium.Web.Proxy.EventArguments;
 using Titanium.Web.Proxy.Models;
 
-namespace WebProxyOverIoTHub.ServerSideProxy
+namespace WebProxyOverIoTHub.ClientSideProxy
 {
     public class InternalWebProxyServer
     {
         private readonly ProxyServer proxyServer;
         private readonly ExplicitProxyEndPoint endPoint;
 
-        public InternalWebProxyServer(int localPort)
+        public InternalWebProxyServer(int localPort, int upstreamPort)
         {
-            proxyServer = new ProxyServer(false, false, false);
-#if DEBUG
-            proxyServer.UpStreamHttpProxy = new ExternalProxy()
+            proxyServer = new ProxyServer(false, false, false)
             {
-                HostName = "localhost",
-                Port = 8888,
+                UpStreamHttpProxy = new ExternalProxy()
+                {
+                    HostName = "localhost",
+                    Port = upstreamPort,
+                }
             };
             proxyServer.UpStreamHttpsProxy = proxyServer.UpStreamHttpProxy;
-#endif
-
             proxyServer.BeforeRequest += OnRequest;
             proxyServer.BeforeResponse += OnResponse;
             HackTitaniumWebProxy();

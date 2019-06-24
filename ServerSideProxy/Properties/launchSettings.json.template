@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "DeviceStreamSample": {
+    "RunLocal": {
       "commandName": "Project",
       "environmentVariables": {
         "APPSETTING_IOTHUB_CONNECTION_STRING": "<yourDeviceConnectionString>",

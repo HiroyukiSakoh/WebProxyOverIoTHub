@@ -2,14 +2,17 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 
 namespace WebProxyOverIoTHub.ServerSideProxy
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static async Task Main()
         {
+            TaskScheduler.UnobservedTaskException
+              += TaskScheduler_UnobservedTaskException;
             var host = new HostBuilder()
                 .ConfigureWebJobs(webjobBuilder =>
                 {
@@ -35,6 +38,11 @@ namespace WebProxyOverIoTHub.ServerSideProxy
             {
                 await host.Services.GetService<IJobHost>().StartAsync(cancellationToken);
             }
+        }
+
+        private static void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            Console.WriteLine(e.Exception.InnerException);
         }
     }
 }
